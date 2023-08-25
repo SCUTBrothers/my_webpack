@@ -4,6 +4,10 @@ import * as fs from 'fs'
 type Callback = (err: Error | null, absoluteFilename?: string) => void
 
 interface Options {
+  /**
+   * @description
+   * 用于指定额外的搜索node_modules的路径范围
+   */
   paths?: string[]
   extensions?: string[]
 }
@@ -11,12 +15,6 @@ interface Options {
 const BasicOptions: Options = {
   paths: [],
   extensions: ['.js']
-}
-
-function resolveAsDirectory(pathname: string, options: Options, callback: Callback) {
-  // check if pathname is a existed directory
-  // if yes, try resolve index.js or index file with extensions
-  // or resolve file list in package.json with main field using extensions of options
 }
 
 function resolveAsFile(pathname: string, options: Options, callback: Callback) {
@@ -42,6 +40,79 @@ function resolveAsFile(pathname: string, options: Options, callback: Callback) {
   }
 
   tryResolve(-1)
+}
+
+function resolveAsDirectory(pathname: string, options: Options, callback: Callback) {
+  // check if pathname is a existed directory
+  // if yes, try resolve index.js or index file with extensions
+  // or resolve file list in package.json with main field using extensions of options
+
+  const packageJsonPath = path.resolve(pathname, 'package.json')
+  fs.access(packageJsonPath, (err) => {
+    if (err) {
+      callback(new Error(`Cannot resolve module: ${pathname}`))
+    } else {
+      fs.readFile(packageJsonPath, (e, data) => {
+        if (e) {
+          callback(new Error(`Cannot resolve module: ${pathname}`))
+        } else {
+          const packageJson = JSON.parse(data.toString()) as Record<string, unknown>
+          const main = (packageJson.main || 'index') as string
+          const mainPath = path.resolve(pathname, main)
+          resolveAsFile(mainPath, options, (error, absoluteFilename) => {
+            if (error) {
+              callback(new Error(`Cannot resolve module: ${pathname}`))
+            } else {
+              callback(null, absoluteFilename)
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+function resolveAsNodeModule(
+  contextArray: string[],
+  identifierArray: string[],
+  options: Options,
+  callback: Callback
+) {
+  const paths = (options.paths || BasicOptions.paths) as string[]
+  const dirs = [...paths]
+
+  const idx = contextArray.indexOf('node_modules')
+  const rootNodeModulesIdx = idx === -1 ? 0 : idx
+
+  for (let i = contextArray.length; i > rootNodeModulesIdx; i--) {
+    if (contextArray[i - 1] !== 'node_modules') {
+      const dir = `${contextArray.slice(0, i).join(path.sep) + path.sep}node_modules`
+      dirs.push(dir)
+    }
+  }
+
+  const tryResolveModule = (index: number) => {
+    const module = dirs[index]
+    resolveAsFile(module, options, (err, absoluteFilename) => {
+      if (err) {
+        resolveAsDirectory(module, options, (e, filename) => {
+          if (e) {
+            if (index >= dirs.length) {
+              callback(new Error(`Module "${identifierArray.join('/')}" not found`))
+            } else {
+              tryResolveModule(index + 1)
+            }
+          } else {
+            callback(null, filename)
+          }
+        })
+      } else {
+        callback(null, absoluteFilename)
+      }
+    })
+  }
+
+  tryResolveModule(0)
 }
 
 /**
@@ -85,6 +156,9 @@ function resolve(
         callback(null, absoluteFilename)
       }
     })
+  } else {
+    // resolve as module name
+    resolveAsNodeModule(contextArray, identifierArray, options, finalCallback)
   }
 }
 
