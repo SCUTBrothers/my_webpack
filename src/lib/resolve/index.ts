@@ -30,11 +30,14 @@ function resolveAsFile(pathname: string, options: Options, callback: Callback) {
     }
 
     const absoluteFilename = index < 0 ? pathname : pathname + extensions[index]
-    fs.access(absoluteFilename, (err) => {
+
+    fs.stat(absoluteFilename, (err, stats) => {
       if (err) {
         tryResolve(index + 1)
-      } else {
+      } else if (stats.isFile()) {
         callback(null, absoluteFilename)
+      } else {
+        tryResolve(index + 1)
       }
     })
   }
@@ -46,18 +49,29 @@ function resolveAsDirectory(pathname: string, options: Options, callback: Callba
   // check if pathname is a existed directory
   // if yes, try resolve index.js or index file with extensions
   // or resolve file list in package.json with main field using extensions of options
+  const defaultModuleName = 'index'
 
   const packageJsonPath = path.resolve(pathname, 'package.json')
   fs.access(packageJsonPath, (err) => {
     if (err) {
-      callback(new Error(`Cannot resolve module: ${pathname}`))
+      resolveAsFile(
+        path.resolve(pathname, defaultModuleName),
+        options,
+        (error, absoluteFilename) => {
+          if (error) {
+            callback(new Error(`Cannot resolve module: ${pathname}`))
+          } else {
+            callback(null, absoluteFilename)
+          }
+        }
+      )
     } else {
       fs.readFile(packageJsonPath, (e, data) => {
         if (e) {
           callback(new Error(`Cannot resolve module: ${pathname}`))
         } else {
           const packageJson = JSON.parse(data.toString()) as Record<string, unknown>
-          const main = (packageJson.main || 'index') as string
+          const main = (packageJson.main || defaultModuleName) as string
           const mainPath = path.resolve(pathname, main)
           resolveAsFile(mainPath, options, (error, absoluteFilename) => {
             if (error) {
@@ -92,16 +106,17 @@ function resolveAsNodeModule(
   }
 
   const tryResolveModule = (index: number) => {
-    const module = dirs[index]
+    if (index >= dirs.length) {
+      callback(new Error(`Module "${identifierArray.join('/')}" not found`))
+      return
+    }
+
+    const module = path.resolve(dirs[index], ...identifierArray)
     resolveAsFile(module, options, (err, absoluteFilename) => {
       if (err) {
         resolveAsDirectory(module, options, (e, filename) => {
           if (e) {
-            if (index >= dirs.length) {
-              callback(new Error(`Module "${identifierArray.join('/')}" not found`))
-            } else {
-              tryResolveModule(index + 1)
-            }
+            tryResolveModule(index + 1)
           } else {
             callback(null, filename)
           }
@@ -161,10 +176,5 @@ function resolve(
     resolveAsNodeModule(contextArray, identifierArray, options, finalCallback)
   }
 }
-
-resolve('/home/username/project/src/folder1', '/home/folder2/file1', (err, absoluteFilename) => {
-  console.log('\n 🎯-> Line 49 check the variable err: 📮️---- 📮️', err)
-  console.log('\n 🎯-> Line 50 check the variable absoluteFilename: 📮️---- 📮️', absoluteFilename)
-})
 
 export default resolve
