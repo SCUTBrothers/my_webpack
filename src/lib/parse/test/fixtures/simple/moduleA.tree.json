@@ -1,0 +1,46 @@
+{
+  "requires": [
+    {
+      "name": "a",
+      "nameRange": [
+        8,
+        11
+      ],
+      "line": 1,
+      "column": 0
+    }
+  ],
+  "asyncs": [
+    {
+      "requires": [
+        {
+          "name": "d"
+        }
+      ],
+      "asyncs": [],
+      "namesRange": [
+        29,
+        32
+      ],
+      "line": 3,
+      "column": 0
+    },
+    {
+      "requires": [
+        {
+          "name": "e"
+        },
+        {
+          "name": "f"
+        }
+      ],
+      "asyncs": [],
+      "namesRange": [
+        50,
+        60
+      ],
+      "line": 5,
+      "column": 0
+    }
+  ]
+}

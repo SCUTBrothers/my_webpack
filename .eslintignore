@@ -2,3 +2,7 @@
 .prettierrc.js
 jest.config.ts
 babel.config.js
+
+**/test/**/*.js
+**/lib/**/*.js
+**/*.txt

@@ -27,5 +27,14 @@
     "start": "nodemon",
     "exec": "ts-node",
     "test": "jest"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.22.10",
+    "@babel/parser": "^7.22.11",
+    "@babel/template": "^7.22.5",
+    "@babel/traverse": "^7.22.11",
+    "@babel/types": "^7.22.11",
+    "@types/uglify-js": "^3.17.2",
+    "meow": "^12.1.1"
   }
 }

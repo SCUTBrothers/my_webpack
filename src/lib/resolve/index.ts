@@ -1,23 +1,14 @@
 import path from 'path'
 import * as fs from 'fs'
+import { Callback } from '../utils/types'
+import { ResolveOptions } from '../webpack/types'
 
-type Callback = (err: Error | null, absoluteFilename?: string) => void
-
-interface Options {
-  /**
-   * @description
-   * 用于指定额外的搜索node_modules的路径范围
-   */
-  paths?: string[]
-  extensions?: string[]
-}
-
-const BasicOptions: Options = {
+const BasicOptions: ResolveOptions = {
   paths: [],
   extensions: ['.js']
 }
 
-function resolveAsFile(pathname: string, options: Options, callback: Callback) {
+function resolveAsFile(pathname: string, options: ResolveOptions, callback: Callback<string>) {
   // check if pathname is a existed file
   // if yes, return pathname
   // if no try resolve with extensions
@@ -25,7 +16,7 @@ function resolveAsFile(pathname: string, options: Options, callback: Callback) {
 
   const tryResolve = (index: number) => {
     if (index >= extensions.length) {
-      callback(new Error('Cannot resolve module'))
+      callback(new Error('Cannot resolve module'), null)
       return
     }
 
@@ -45,7 +36,7 @@ function resolveAsFile(pathname: string, options: Options, callback: Callback) {
   tryResolve(-1)
 }
 
-function resolveAsDirectory(pathname: string, options: Options, callback: Callback) {
+function resolveAsDirectory(pathname: string, options: ResolveOptions, callback: Callback<string>) {
   // check if pathname is a existed directory
   // if yes, try resolve index.js or index file with extensions
   // or resolve file list in package.json with main field using extensions of options
@@ -59,7 +50,7 @@ function resolveAsDirectory(pathname: string, options: Options, callback: Callba
         options,
         (error, absoluteFilename) => {
           if (error) {
-            callback(new Error(`Cannot resolve module: ${pathname}`))
+            callback(new Error(`Cannot resolve module: ${pathname}`), null)
           } else {
             callback(null, absoluteFilename)
           }
@@ -68,14 +59,14 @@ function resolveAsDirectory(pathname: string, options: Options, callback: Callba
     } else {
       fs.readFile(packageJsonPath, (e, data) => {
         if (e) {
-          callback(new Error(`Cannot resolve module: ${pathname}`))
+          callback(new Error(`Cannot resolve module: ${pathname}`), null)
         } else {
           const packageJson = JSON.parse(data.toString()) as Record<string, unknown>
           const main = (packageJson.main || defaultModuleName) as string
           const mainPath = path.resolve(pathname, main)
           resolveAsFile(mainPath, options, (error, absoluteFilename) => {
             if (error) {
-              callback(new Error(`Cannot resolve module: ${pathname}`))
+              callback(new Error(`Cannot resolve module: ${pathname}`), null)
             } else {
               callback(null, absoluteFilename)
             }
@@ -89,8 +80,8 @@ function resolveAsDirectory(pathname: string, options: Options, callback: Callba
 function resolveAsNodeModule(
   contextArray: string[],
   identifierArray: string[],
-  options: Options,
-  callback: Callback
+  options: ResolveOptions,
+  callback: Callback<string>
 ) {
   const paths = (options.paths || BasicOptions.paths) as string[]
   const dirs = [...paths]
@@ -107,7 +98,7 @@ function resolveAsNodeModule(
 
   const tryResolveModule = (index: number) => {
     if (index >= dirs.length) {
-      callback(new Error(`Module "${identifierArray.join('/')}" not found`))
+      callback(new Error(`Module "${identifierArray.join('/')}" not found`), null)
       return
     }
 
@@ -140,21 +131,26 @@ function resolveAsNodeModule(
  *  - absolute path: "/home/username/project/src/folder1/folder2/file1"
  * @param callback
  */
-function resolve(context: string, identifier: string, callback: Callback): void
-function resolve(context: string, identifier: string, option: Options, callback: Callback): void
+function resolve(context: string, identifier: string, callback: Callback<string>): void
 function resolve(
   context: string,
   identifier: string,
-  optionsOrCallback: Options | Callback,
-  optionalCallback?: Callback
+  option: ResolveOptions,
+  callback: Callback<string>
+): void
+function resolve(
+  context: string,
+  identifier: string,
+  optionsOrCallback: ResolveOptions | Callback<string>,
+  optionalCallback?: Callback<string>
 ) {
   // overload argument
-  const callback = !optionalCallback ? (optionsOrCallback as Callback) : optionalCallback
-  const options = !optionalCallback ? { ...BasicOptions } : (optionsOrCallback as Options)
+  const callback = !optionalCallback ? (optionsOrCallback as Callback<string>) : optionalCallback
+  const options = !optionalCallback ? { ...BasicOptions } : (optionsOrCallback as ResolveOptions)
 
-  const finalCallback = (err: Error | null, absoluteFilename?: string) => {
+  const finalCallback: Callback<string> = (err, absoluteFilename) => {
     if (err) {
-      callback(new Error(`Module "${identifier}" not found in "${context}"`))
+      callback(new Error(`Module "${identifier}" not found in "${context}"`), null)
     } else {
       callback(null, absoluteFilename)
     }
