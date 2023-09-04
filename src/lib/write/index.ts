@@ -48,11 +48,7 @@ function writeSource(module: Module) {
   replaces.forEach((repl) => {
     const remSource = result.shift()
     if (remSource)
-      result.unshift(
-        remSource.substring(0, repl.from),
-        repl.value,
-        remSource.substring(repl.to + 1)
-      )
+      result.unshift(remSource.substring(0, repl.from), repl.value, remSource.substring(repl.to))
   })
   return result.join('')
 }

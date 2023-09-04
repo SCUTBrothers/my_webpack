@@ -77,6 +77,7 @@ export default function webpack(
       context = contextOrAbsoluteModulePath
       moduleName = moduleNameOrOptionsOrCallback
       options = {} as Options
+      callback = optionsOrCallback as Callback<OutPut>
     } else {
       context = path.dirname(contextOrAbsoluteModulePath)
       moduleName = `./${path.basename(contextOrAbsoluteModulePath)}`

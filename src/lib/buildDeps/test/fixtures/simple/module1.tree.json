@@ -1,0 +1,206 @@
+{
+  "modules": {
+    "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/module1.js": {
+      "id": 0,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/module1.js",
+      "requires": [
+        {
+          "name": "./a",
+          "nameRange": [
+            16,
+            21
+          ],
+          "line": 1,
+          "column": 8,
+          "id": 1
+        },
+        {
+          "name": "./b",
+          "nameRange": [
+            91,
+            96
+          ],
+          "line": 4,
+          "column": 17,
+          "id": 2
+        },
+        {
+          "name": "m1/a",
+          "nameRange": [
+            138,
+            144
+          ],
+          "line": 7,
+          "column": 13,
+          "id": 3
+        }
+      ],
+      "asyncs": [],
+      "source": "var a = require('./a')\nif (x) {\n  for (var i = 0; i < 100; i++) {\n    while (true) require('./b')\n    do {\n      i++\n    } while (require('m1/a')())\n  }\n}\n",
+      "chunkId": 0,
+      "chunks": [
+        0
+      ]
+    },
+    "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/a.js": {
+      "id": 1,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/a.js",
+      "requires": [],
+      "asyncs": [],
+      "source": "module.exports = function a() {\n  return 'This is a'\n}\n",
+      "chunks": [
+        0
+      ]
+    },
+    "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/b.js": {
+      "id": 2,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/b.js",
+      "requires": [],
+      "asyncs": [],
+      "source": "module.exports = function b() {\n  return 'This is b'\n}\n",
+      "chunks": [
+        0
+      ]
+    },
+    "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/node_modules/m1/a.js": {
+      "id": 3,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/node_modules/m1/a.js",
+      "requires": [],
+      "asyncs": [],
+      "source": "module.exports = function a() {\n    return \"This is a in m1\";\n};\n",
+      "chunks": [
+        0
+      ]
+    }
+  },
+  "modulesById": {
+    "0": {
+      "id": 0,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/module1.js",
+      "requires": [
+        {
+          "name": "./a",
+          "nameRange": [
+            16,
+            21
+          ],
+          "line": 1,
+          "column": 8,
+          "id": 1
+        },
+        {
+          "name": "./b",
+          "nameRange": [
+            91,
+            96
+          ],
+          "line": 4,
+          "column": 17,
+          "id": 2
+        },
+        {
+          "name": "m1/a",
+          "nameRange": [
+            138,
+            144
+          ],
+          "line": 7,
+          "column": 13,
+          "id": 3
+        }
+      ],
+      "asyncs": [],
+      "source": "var a = require('./a')\nif (x) {\n  for (var i = 0; i < 100; i++) {\n    while (true) require('./b')\n    do {\n      i++\n    } while (require('m1/a')())\n  }\n}\n",
+      "chunkId": 0,
+      "chunks": [
+        0
+      ]
+    },
+    "1": {
+      "id": 1,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/a.js",
+      "requires": [],
+      "asyncs": [],
+      "source": "module.exports = function a() {\n  return 'This is a'\n}\n",
+      "chunks": [
+        0
+      ]
+    },
+    "2": {
+      "id": 2,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/b.js",
+      "requires": [],
+      "asyncs": [],
+      "source": "module.exports = function b() {\n  return 'This is b'\n}\n",
+      "chunks": [
+        0
+      ]
+    },
+    "3": {
+      "id": 3,
+      "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/node_modules/m1/a.js",
+      "requires": [],
+      "asyncs": [],
+      "source": "module.exports = function a() {\n    return \"This is a in m1\";\n};\n",
+      "chunks": [
+        0
+      ]
+    }
+  },
+  "chunks": {
+    "0": {
+      "id": 0,
+      "modules": {
+        "0": "include",
+        "1": "include",
+        "2": "include",
+        "3": "include"
+      },
+      "context": {
+        "id": 0,
+        "filename": "/Users/chenba/Documents/webpack/my_webpack/src/lib/buildDeps/test/fixtures/simple/module1.js",
+        "requires": [
+          {
+            "name": "./a",
+            "nameRange": [
+              16,
+              21
+            ],
+            "line": 1,
+            "column": 8,
+            "id": 1
+          },
+          {
+            "name": "./b",
+            "nameRange": [
+              91,
+              96
+            ],
+            "line": 4,
+            "column": 17,
+            "id": 2
+          },
+          {
+            "name": "m1/a",
+            "nameRange": [
+              138,
+              144
+            ],
+            "line": 7,
+            "column": 13,
+            "id": 3
+          }
+        ],
+        "asyncs": [],
+        "source": "var a = require('./a')\nif (x) {\n  for (var i = 0; i < 100; i++) {\n    while (true) require('./b')\n    do {\n      i++\n    } while (require('m1/a')())\n  }\n}\n",
+        "chunkId": 0,
+        "chunks": [
+          0
+        ]
+      }
+    }
+  },
+  "nextModuleId": 4,
+  "nextChunkId": 1,
+  "chunkModules": {}
+}

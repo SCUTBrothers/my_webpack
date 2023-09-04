@@ -287,7 +287,7 @@ function buildDeps(
   optionsOrCallback: Options | Callback<DepTree>,
   maybeCallback?: Callback<DepTree>
 ) {
-  const callback = !maybeCallback ? maybeCallback : (optionsOrCallback as Callback<DepTree>)
+  const callback = !maybeCallback ? (optionsOrCallback as Callback<DepTree>) : maybeCallback
   const options = !maybeCallback ? (optionsOrCallback as Options) : ({} as Options)
 
   const depTree: DepTree = {
@@ -316,7 +316,7 @@ function buildDeps(
       return
     }
 
-    if (!id) {
+    if (id === undefined || id === null) {
       return
     }
 
